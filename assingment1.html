@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form,
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input,
+        select,
+        button {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .no-record {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            padding: 15px;
+            display: none;
+        }
+
+        .total {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Student Management System</h2>
+
+        <form id="studentForm">
+            <input type="text" id="name" placeholder="Student Name" required>
+            <input type="text" id="roll" placeholder="Roll No" required>
+            <select id="branch" required>
+                <option value="">Select Branch</option>
+                <option value="CSE">CSE</option>
+                <option value="ECE">ECE</option>
+                <option value="ME">ME</option>
+                <option value="CE">CE</option>
+            </select>
+            <button type="submit">Add Student</button>
+        </form>
+
+        <hr>
+
+        <div class="controls">
+            <input type="text" id="search" placeholder="Search by Name..." onkeyup="render()">
+            <select id="filterBranch" onchange="render()">
+                <option value="ALL">All Branches</option>
+                <option value="CSE">CSE</option>
+                <option value="ECE">ECE</option>
+                <option value="ME">ME</option>
+                <option value="CE">CE</option>
+            </select>
+        </div>
+
+        <div class="total">Total Students: <span id="totalCount">0</span></div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Roll No</th>
+                    <th>Name</th>
+                    <th>Branch</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="studentList"></tbody>
+        </table>
+
+        <div id="noRecord" class="no-record">No Record Found</div>
+    </div>
+
+    <script>
+        let students = [
+            { name: "Rahul Sharma", roll: "101", branch: "CSE" },
+            { name: "Priya Singh", roll: "102", branch: "ECE" }
+        ];
+
+        function render() {
+            let searchVal = document.getElementById('search').value.toLowerCase();
+            let filterVal = document.getElementById('filterBranch').value;
+            let tbody = document.getElementById('studentList');
+            tbody.innerHTML = '';
+
+            let count = 0;
+
+            for (let i = 0; i < students.length; i++) {
+                let s = students[i];
+                let matchesName = s.name.toLowerCase().includes(searchVal);
+                let matchesBranch = (filterVal === 'ALL' || s.branch === filterVal);
+
+                if (matchesName && matchesBranch) {
+                    count++;
+                    tbody.innerHTML += `
+            <tr>
+              <td>${s.roll}</td>
+              <td>${s.name}</td>
+              <td>${s.branch}</td>
+              <td><button class="delete-btn" onclick="deleteStudent(${i})">Delete</button></td>
+            </tr>`;
+                }
+            }
+
+            document.getElementById('totalCount').innerText = students.length;
+            document.getElementById('noRecord').style.display = (count === 0) ? 'block' : 'none';
+        }
+
+    
