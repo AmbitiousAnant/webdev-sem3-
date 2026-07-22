@@ -44,7 +44,6 @@
             background-color: #28a745;
             color: white;
             border: none;
-            cursor: pointer;
             border-radius: 4px;
         }
 
@@ -168,4 +167,25 @@
             document.getElementById('noRecord').style.display = (count === 0) ? 'block' : 'none';
         }
 
-    
+        document.getElementById('studentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            let name = document.getElementById('name').value;
+            let roll = document.getElementById('roll').value;
+            let branch = document.getElementById('branch').value;
+
+            students.push({ name, roll, branch });
+            this.reset();
+            render();
+        });
+
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            render();
+        }
+
+        render();
+    </script>
+
+</body>
+
+</html>
