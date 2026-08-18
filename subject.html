@@ -1,0 +1,27 @@
+<htmL>
+<title>STUDENT MANAGEMENT SYSTEM</tile>
+
+    <body>
+        <script>
+            function get(name, roll_no) {
+                let name = prompt("Enter name");
+                let roll_no = prompt("Enter roll.no");
+            }
+            function getMarks(totalSubjects) {
+                let marksArray = [];
+
+                for (let i = 0; i < totalSubjects; i++) {
+                    let input = prompt("Enter marks for subject " + (i + 1) + ":");
+                    let mark = Number(input);
+                    marksArray.push(mark);
+                }
+                return marksArray;
+            }
+
+
+
+        </script>
+
+    </body>
+
+</htmL>
