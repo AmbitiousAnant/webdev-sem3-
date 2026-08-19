@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse events</title>
+</head>
+ <style>
+        #box{
+            height:300px;
+            width:300px;
+            background-color: aqua;
+            margin:200px 0 0 100px;
+            border:5px solid red; 
+        }
+    </style>
+     <script>
+        function eventcall(){
+            alert("These are the mouse events");
+        }
+        function handleMouseOver(){
+            document.getElementById("para").textContent = "Mouse is over the paragraph";
+        }
+        function handleMouseOut(){
+            document.getElementById("para").textContent = "This is fsd training";
+        }
+    </script>
+<body>
+    <div id= "box" onclick="eventcall()">This is section A </div>
+    <div>
+    
+        <p id="para" onmouseover="handleMouseOver()" onmouseout="handleMouseOut()">This is fsd training</p>
+        </div>
+</body>
+</html>

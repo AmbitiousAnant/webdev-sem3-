@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>keyboard</title>
+    <script>
+        function showNameKey(key) {
+            document.getElementById("eventStatus").textContent = "Name key: " + key;
+        }
+        function keyDown(element) {
+            element.style.backgroundColor = "lightyellow";
+        }
+        function keyUp(element) {
+            element.style.backgroundColor = "white";
+        }
+        function showEmailLength(length) {
+            document.getElementById("eventStatus").textContent = "Email characters: " + length;
+        }
+        function checkPhoneKey(event) {
+            if (event.target.value.length >= 10 && event.key.length === 1) {
+                event.preventDefault();
+                document.getElementById("eventStatus").textContent = "";
+                return;
+            }
+            if (event.key.length === 1 && !/[0-9]/.test(event.key)) {
+                event.preventDefault();
+                document.getElementById("eventStatus").textContent = "Phone accepts numbers only";
+            }
+        }
+        function showMessageLength(length) {
+            document.getElementById("eventStatus").textContent = "Message characters: " + length;
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: bisque;
+        }
+
+        #form {
+            max-width: 440px;
+            margin: 80px auto;
+        }
+
+        form {
+            box-sizing: border-box;
+            padding: 20px;
+            border:5px solid black;
+            background-color: aliceblue;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 10px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            padding: 4px 0;
+        }
+
+        input,
+        textarea,
+        button {
+            box-sizing: border-box;
+            font: inherit;
+            margin-top: 5px;
+            padding: 8px;
+            width: 100%;
+        }
+
+        #eventStatus {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="form">
+        <h1>Keyboard events</h1>
+        <p id="eventStatus">Press a key in the form</p>
+        <form>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" onkeydown="showNameKey(event.key); keyDown(this)" onkeyup="keyUp(this)" required>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" onkeydown="keyDown(this)" onkeyup="showEmailLength(this.value.length); keyUp(this)" required>
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" maxlength="10" onkeydown="checkPhoneKey(event); keyDown(this)" onkeyup="keyUp(this)" required>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4" onkeydown="keyDown(this)" onkeyup="showMessageLength(this.value.length); keyUp(this)" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    
+</body>
+</html>
