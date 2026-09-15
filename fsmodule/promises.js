@@ -34,10 +34,11 @@ appendFile()
 //rename
 async function renameFile(){
     try{
-        await fs.renameFile("promise.txt","promise_broken.txt");
+        await fs.rename("promise.txt","promise_broken.txt");
         console.log("Renmaed");
     }catch(error){
         console.log("Eror",error);
     }
 }
 renameFile();
+//delete
