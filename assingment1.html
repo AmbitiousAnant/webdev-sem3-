@@ -28,12 +28,6 @@
 			border: 1px solid #ccc;
 		}
 
-		.intro {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 30px;
-		}
-
 		.eyebrow,
 		.question-count {
 			color: #e66b00;
@@ -43,14 +37,12 @@
 		h1 { font-size: 40px; }
 		.lead,
 		.detail-row span { color: #666; }
-		.details { padding-left: 20px; border-left: 3px solid #b9d6ff; }
 		.detail-row { margin: 18px 0; }
 		form { margin-top: 25px; }
 		label { display: block; margin: 8px 0; }
 		input,
 		select { width: 100%; padding: 10px; }
-		.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-		button { padding: 12px 18px; color: white; background: #1769d1; border: 0; cursor: pointer; }
+		button { padding: 12px 18px; color: white; background: #1769d1; border: 0; }
 		.start-button { width: 100%; margin-top: 15px; }
 		.quiz, .result { display: none; }
 		.quiz-header { padding-bottom: 20px; border-bottom: 1px solid #ddd; }
@@ -155,6 +147,84 @@
 		</section>
 	</main>
 
-	\
+	<script>
+		const questions = [
+			{ text: 'Which planet is known as the Red Planet?', options: ['Venus', 'Mars', 'Jupiter', 'Mercury'], answer: 1 },
+			{ text: 'What is the capital city of India?', options: ['Mumbai', 'Kolkata', 'New Delhi', 'Chennai'], answer: 2 },
+			{ text: 'How many sides does a hexagon have?', options: ['Five', 'Six', 'Seven', 'Eight'], answer: 1 },
+			{ text: 'Which language is used to style web pages?', options: ['HTML', 'Python', 'CSS', 'SQL'], answer: 2 },
+			{ text: 'What is 12 × 4?', options: ['36', '48', '52', '64'], answer: 1 },
+			{ text: 'Which gas do plants absorb from the atmosphere?', options: ['Oxygen', 'Nitrogen', 'Hydrogen', 'Carbon dioxide'], answer: 3 }
+		];
+
+		const intro = document.getElementById('introScreen');
+		const quiz = document.getElementById('quizScreen');
+		const result = document.getElementById('resultScreen');
+		const form = document.getElementById('detailsForm');
+		const answers = [];
+		let qNo = 0;
+		let name = '';
+
+		function showQuestion() {
+			const q = questions[qNo];
+
+			document.getElementById('questionCount').textContent = `Question ${qNo + 1} of ${questions.length}`;
+			document.getElementById('questionText').textContent = q.text;
+			document.getElementById('progressBar').style.width = `${((qNo + 1) / questions.length) * 100}%`;
+			document.getElementById('answers').innerHTML = q.options.map((option, index) => `
+				<label class="answer"><input type="radio" name="answer" value="${index}" ${answers[qNo] === index ? 'checked' : ''}>${option}</label>
+			`).join('');
+			document.getElementById('previousButton').style.visibility = qNo === 0 ? 'hidden' : 'visible';
+			document.getElementById('nextButton').textContent = qNo === questions.length - 1 ? 'Submit Quiz ✓' : 'Next →';
+		}
+
+		function showResult() {
+			const score = answers.reduce((total, answer, index) => total + (answer === questions[index].answer ? 1 : 0), 0);
+			quiz.style.display = 'none';
+			result.style.display = 'block';
+			document.getElementById('resultGreeting').textContent = `${name}, your answers have been submitted.`;
+			document.getElementById('resultScore').textContent = `You scored ${score} out of ${questions.length}`;
+		}
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			if (!form.checkValidity()) {
+				document.getElementById('formError').textContent = 'Please fill in your name, roll number, and section.';
+				form.reportValidity();
+				return;
+			}
+			name = document.getElementById('studentName').value.trim();
+			intro.style.display = 'none';
+			quiz.style.display = 'block';
+			showQuestion();
+		});
+
+		document.getElementById('nextButton').addEventListener('click', () => {
+			const selected = document.querySelector('input[name="answer"]:checked');
+
+			if (!selected) {
+				window.alert('Please choose an answer before continuing.');
+				return;
+			}
+
+			answers[qNo] = Number(selected.value);
+
+			if (qNo === questions.length - 1) {
+				showResult();
+			} else {
+				qNo += 1;
+				showQuestion();
+			}
+		});
+
+		document.getElementById('previousButton').addEventListener('click', () => {
+			if (qNo > 0) {
+				qNo -= 1;
+				showQuestion();
+			}
+		});
+
+		document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
+	</script>
 </body>
 </html>
