@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>QuickCheck Quiz</title>
+	<style>
+		body {
+			margin: 0;
+			background: #eaf3ff;
+			font-family: Arial, sans-serif;
+		}
+
+		.page {
+			width: 90%;
+			max-width: 900px;
+			margin: 30px auto;
+		}
+
+		.brand {
+			margin-bottom: 20px;
+			font-weight: bold;
+		}
+
+		.panel {
+			padding: 30px;
+			background: white;
+			border: 1px solid #ccc;
+		}
+
+		.intro {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 30px;
+		}
+
+		.eyebrow,
+		.question-count {
+			color: #e66b00;
+			font-weight: bold;
+		}
+
+		h1 { font-size: 40px; }
+		.lead,
+		.detail-row span { color: #666; }
+		.details { padding-left: 20px; border-left: 3px solid #b9d6ff; }
+		.detail-row { margin: 18px 0; }
+		form { margin-top: 25px; }
+		label { display: block; margin: 8px 0; }
+		input,
+		select { width: 100%; padding: 10px; }
+		.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+		button { padding: 12px 18px; color: white; background: #1769d1; border: 0; cursor: pointer; }
+		.start-button { width: 100%; margin-top: 15px; }
+		.quiz, .result { display: none; }
+		.quiz-header { padding-bottom: 20px; border-bottom: 1px solid #ddd; }
+		.progress-track { height: 8px; margin-top: 20px; background: #ddd; }
+		.progress-bar { height: 100%; background: orange; }
+		.quiz-body { padding-top: 25px; }
+		.question { margin: 15px 0; }
+		.answer { display: block; padding: 12px; border: 1px solid #ddd; margin: 10px 0; }
+		.answer input { width: auto; }
+		.quiz-actions { display: flex; justify-content: space-between; margin-top: 25px; }
+		.secondary { color: #222; background: #ddd; }
+		.result { text-align: center; }
+		.result-badge { margin: auto; width: 70px; padding: 20px 0; color: white; background: green; }
+		.result-score { color: #1769d1; font-weight: bold; }
+		.error { color: red; }
+	</style>
+</head>
+<body>
+	<main class="page">
+		<div class="brand">QUICKCHECK</div>
+
+		<section class="panel intro" id="introScreen">
+			<div>
+				<p class="eyebrow">Classroom quiz · General knowledge</p>
+				<h1>Ready to test your thinking?</h1>
+				<p class="lead">Enter your details, read the instructions, and begin a short knowledge check. Your score appears as soon as you submit.</p>
+				<form id="detailsForm">
+					<label for="studentName">Full name</label>
+					<input id="studentName" name="studentName" type="text" placeholder="e.g. Ananya Sharma" required>
+					<div class="field-grid">
+						<div>
+							<label for="rollNumber">Roll number</label>
+							<input id="rollNumber" name="rollNumber" type="text" placeholder="e.g. 24" required>
+						</div>
+						<div>
+							<label for="section">Section</label>
+							<select id="section" name="section" required>
+								<option value="">Choose section</option>
+								<option>Section A</option>
+								<option>Section B</option>
+								<option>Section C</option>
+							</select>
+						</div>
+					</div>
+					<p class="error" id="formError" aria-live="polite"></p>
+					<button class="start-button" type="submit">Start Quiz →</button>
+				</form>
+			</div>
+
+			<div class="details" aria-label="Quiz details">
+				<p class="eyebrow">Before you begin</p>
+				<div class="detail-row">
+					<span>01</span>
+					<div>
+						<strong>6 questions</strong>
+						<span>Multiple choice</span>
+					</div>
+				</div>
+				<div class="detail-row">
+					<span>02</span>
+					<div>
+						<strong>5 minutes</strong>
+						<span>Time limit for the quiz</span>
+					</div>
+				</div>
+				<div class="detail-row">
+					<span>03</span>
+					<div>
+						<strong>One attempt</strong>
+						<span>Answer every question</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="panel quiz" id="quizScreen">
+			<header class="quiz-header">
+				<div class="quiz-top">
+					<h2 class="quiz-title">General Knowledge</h2>
+				</div>
+				<div class="progress-track">
+					<div class="progress-bar" id="progressBar"></div>
+				</div>
+			</header>
+			<div class="quiz-body">
+				<p class="question-count" id="questionCount">Question 1 of 6</p>
+				<h3 class="question" id="questionText"></h3>
+				<div class="answers" id="answers"></div>
+				<div class="quiz-actions">
+					<button class="secondary" id="previousButton" type="button">← Previous</button>
+					<button id="nextButton" type="button">Next →</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="panel result" id="resultScreen">
+			<div class="result-badge">✓</div>
+			<h2>Quiz complete</h2>
+			<p class="result-copy" id="resultGreeting"></p>
+			<p class="result-score" id="resultScore"></p>
+			<button id="restartButton" type="button">Try Again</button>
+		</section>
+	</main>
+
+	\
+</body>
+</html>
