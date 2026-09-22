@@ -46,12 +46,17 @@
 		.start-button { width: 100%; margin-top: 15px; }
 		.quiz, .result { display: none; }
 		.quiz-header { padding-bottom: 20px; border-bottom: 1px solid #ddd; }
+		.quiz-top { display: flex; justify-content: space-between; align-items: center; }
+		.timer { font-weight: bold; color: #1769d1; }
 		.progress-track { height: 8px; margin-top: 20px; background: #ddd; }
 		.progress-bar { height: 100%; background: orange; }
 		.quiz-body { padding-top: 25px; }
 		.question { margin: 15px 0; }
-		.answer { display: block; padding: 12px; border: 1px solid #ddd; margin: 10px 0; }
+		.answer { display: block; padding: 12px; border: 1px solid #ddd; margin: 10px 0; cursor: pointer; transition: 0.2s ease; }
+		.answer:hover, .answer.active { background: #fff3a6; }
 		.answer input { width: auto; }
+		.answer.correct { background: #bdf7c8; border-color: green; }
+		.answer.wrong { background: #f7b7b7; border-color: red; }
 		.quiz-actions { display: flex; justify-content: space-between; margin-top: 25px; }
 		.secondary { color: #222; background: #ddd; }
 		.result { text-align: center; }
@@ -122,6 +127,7 @@
 			<header class="quiz-header">
 				<div class="quiz-top">
 					<h2 class="quiz-title">General Knowledge</h2>
+					<div class="timer" id="timer">05:00</div>
 				</div>
 				<div class="progress-track">
 					<div class="progress-bar" id="progressBar"></div>
@@ -160,6 +166,65 @@
 		let qNo = 0;
 		let name = '';
 		let answers = [];
+		let timer = 300;
+		let timerId = null;
+		let optionIndex = 0;
+		let quizStarted = false;
+
+		function formatTime(seconds) {
+			const minutes = Math.floor(seconds / 60);
+			const secs = seconds % 60;
+			return (minutes < 10 ? '0' : '') + minutes + ':' + (secs < 10 ? '0' : '') + secs;
+		}
+
+		function updateTimer() {
+			document.getElementById('timer').textContent = formatTime(timer);
+		}
+
+		function startTimer() {
+			clearInterval(timerId);
+			timerId = setInterval(function () {
+				timer--;
+				updateTimer();
+
+				if (timer <= 0) {
+					clearInterval(timerId);
+					alert('Time is up! Quiz finished.');
+					showResult();
+				}
+			}, 1000);
+		}
+
+		function selectOption(index) {
+			const options = document.querySelectorAll('.answer');
+			const selected = options[index];
+			if (!selected) return;
+
+			const input = selected.querySelector('input');
+			if (input) {
+				input.checked = true;
+				answers[qNo] = Number(input.value);
+				markAnswer();
+			}
+		}
+
+		function markAnswer() {
+			const question = questions[qNo];
+			const options = document.querySelectorAll('.answer');
+
+			options.forEach((option, index) => {
+				option.classList.remove('correct', 'wrong', 'active');
+				if (answers[qNo] === index) {
+					option.classList.add('active');
+				}
+				if (index === question.answer) {
+					option.classList.add('correct');
+				}
+				if (answers[qNo] === index && index !== question.answer) {
+					option.classList.add('wrong');
+				}
+			});
+		}
 
 		function showQuestion() {
 			const question = questions[qNo];
@@ -170,6 +235,19 @@
 				const checked = answers[qNo] === index ? 'checked' : '';
 				return '<label class="answer"><input type="radio" name="answer" value="' + index + '" ' + checked + '>' + option + '</label>';
 			}).join('');
+
+			const options = document.querySelectorAll('.answer');
+			options.forEach(function (option, index) {
+				option.addEventListener('mouseenter', function () {
+					optionIndex = index;
+					options.forEach(item => item.classList.remove('active'));
+					option.classList.add('active');
+				});
+
+				option.addEventListener('click', function () {
+					selectOption(index);
+				});
+			});
 
 			document.getElementById('previousButton').style.visibility = qNo === 0 ? 'hidden' : 'visible';
 			document.getElementById('nextButton').textContent = qNo === questions.length - 1 ? 'Submit Quiz ✓' : 'Next →';
@@ -183,6 +261,7 @@
 				}
 			}
 
+			clearInterval(timerId);
 			document.getElementById('quizScreen').style.display = 'none';
 			document.getElementById('resultScreen').style.display = 'block';
 			document.getElementById('resultGreeting').textContent = name + ', your answers have been submitted.';
@@ -202,6 +281,10 @@
 			document.getElementById('formError').textContent = '';
 			document.getElementById('introScreen').style.display = 'none';
 			document.getElementById('quizScreen').style.display = 'block';
+			quizStarted = true;
+			timer = 300;
+			updateTimer();
+			startTimer();
 			showQuestion();
 		});
 
@@ -214,6 +297,7 @@
 			}
 
 			answers[qNo] = Number(selected.value);
+			markAnswer();
 
 			if (qNo === questions.length - 1) {
 				showResult();
@@ -233,6 +317,41 @@
 
 		document.getElementById('restartButton').addEventListener('click', function () {
 			window.location.reload();
+		});
+
+		document.addEventListener('keydown', function (event) {
+			if (!quizStarted) return;
+
+			if (event.key === 'ArrowRight') {
+				event.preventDefault();
+				if (qNo < questions.length - 1) {
+					qNo += 1;
+					showQuestion();
+				}
+			}
+
+			if (event.key === 'ArrowLeft') {
+				event.preventDefault();
+				if (qNo > 0) {
+					qNo -= 1;
+					showQuestion();
+				}
+			}
+
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				const selected = document.querySelector('input[name="answer"]:checked');
+				if (selected) {
+					answers[qNo] = Number(selected.value);
+					markAnswer();
+				}
+				if (qNo === questions.length - 1) {
+					showResult();
+				} else if (selected) {
+					qNo += 1;
+					showQuestion();
+				}
+			}
 		});
 	</script>
 </body>
