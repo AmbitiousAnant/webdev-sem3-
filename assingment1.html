@@ -162,38 +162,50 @@
 		const result = document.getElementById('resultScreen');
 		const form = document.getElementById('detailsForm');
 		const answers = [];
-		let qNo = 0;
-		let name = '';
+		let currentQuestion = 0;
+		let studentName = '';
 
 		function showQuestion() {
-			const q = questions[qNo];
+			const question = questions[currentQuestion];
+			document.getElementById('questionCount').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+			document.getElementById('questionText').textContent = question.text;
+			document.getElementById('progressBar').style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+			document.getElementById('answers').innerHTML = question.options.map((option, index) => {
+				const checked = answers[currentQuestion] === index ? 'checked' : '';
+				return `
+					<label class="answer">
+						<input type="radio" name="answer" value="${index}" ${checked}>
+						${option}
+					</label>
+				`;
+			}).join('');
 
-			document.getElementById('questionCount').textContent = `Question ${qNo + 1} of ${questions.length}`;
-			document.getElementById('questionText').textContent = q.text;
-			document.getElementById('progressBar').style.width = `${((qNo + 1) / questions.length) * 100}%`;
-			document.getElementById('answers').innerHTML = q.options.map((option, index) => `
-				<label class="answer"><input type="radio" name="answer" value="${index}" ${answers[qNo] === index ? 'checked' : ''}>${option}</label>
-			`).join('');
-			document.getElementById('previousButton').style.visibility = qNo === 0 ? 'hidden' : 'visible';
-			document.getElementById('nextButton').textContent = qNo === questions.length - 1 ? 'Submit Quiz ✓' : 'Next →';
+			document.getElementById('previousButton').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+			document.getElementById('nextButton').textContent = currentQuestion === questions.length - 1 ? 'Submit Quiz ✓' : 'Next →';
 		}
 
 		function showResult() {
-			const score = answers.reduce((total, answer, index) => total + (answer === questions[index].answer ? 1 : 0), 0);
+			const score = answers.reduce((total, answer, index) => {
+				return total + (answer === questions[index].answer ? 1 : 0);
+			}, 0);
+
 			quiz.style.display = 'none';
 			result.style.display = 'block';
-			document.getElementById('resultGreeting').textContent = `${name}, your answers have been submitted.`;
+			document.getElementById('resultGreeting').textContent = `${studentName}, your answers have been submitted.`;
 			document.getElementById('resultScore').textContent = `You scored ${score} out of ${questions.length}`;
 		}
 
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
+
 			if (!form.checkValidity()) {
 				document.getElementById('formError').textContent = 'Please fill in your name, roll number, and section.';
 				form.reportValidity();
 				return;
 			}
-			name = document.getElementById('studentName').value.trim();
+
+			studentName = document.getElementById('studentName').value.trim();
+			document.getElementById('formError').textContent = '';
 			intro.style.display = 'none';
 			quiz.style.display = 'block';
 			showQuestion();
@@ -207,24 +219,27 @@
 				return;
 			}
 
-			answers[qNo] = Number(selected.value);
+			answers[currentQuestion] = Number(selected.value);
 
-			if (qNo === questions.length - 1) {
+			if (currentQuestion === questions.length - 1) {
 				showResult();
-			} else {
-				qNo += 1;
-				showQuestion();
+				return;
 			}
+
+			currentQuestion += 1;
+			showQuestion();
 		});
 
 		document.getElementById('previousButton').addEventListener('click', () => {
-			if (qNo > 0) {
-				qNo -= 1;
+			if (currentQuestion > 0) {
+				currentQuestion -= 1;
 				showQuestion();
 			}
 		});
 
-		document.getElementById('restartButton').addEventListener('click', () => window.location.reload());
+		document.getElementById('restartButton').addEventListener('click', () => {
+			window.location.reload();
+		});
 	</script>
 </body>
 </html>
